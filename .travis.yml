@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: jeJoPM7+4XfvgSBld6JTXAZVp67AOHhnA9KIAl94l9UmoImgZcEgMs+s/b3/2Otr1RCRNVUUWkahqdGVQSXz9Dd98MY2P+5N+QrVfwGXsbklmSPN577XlOqZvRqJiNXLiaavf9ya4P3dckRHfWiAfw6Dk3sJiYcnzNub/cSiMmMAl2h37FOlPWL0uTfY8WpBMo5mtOB/x/dxaXjnSHsEoDqpkYI/eR209omUMskEbbNoyAI0ttqfs9UGx+CETQDKUSphr2ufcl8vM5LIdLHIzc2XFFYoDtK28X18A42E8U56pUNelCn5iuc47QMnI664PEkJoV0KOYzEEQqW0POcrE9mrAm3cAVr6WSp5Oq0s96S1aONs8htw9o/i8KRauAvxHJwKRdNoWsq1PHTTu1LoQr2LhetcDhwVhUimblsYPgnFmgzfhND+UXNkS22J0PrT7JN90QSJIWkYkHRdvR2oh219ZGGD7hWfxAOw8Lk5YH9eNl/sbMAXdfaWiS12RNx+kYB4pBYQkxGzLJ2VFJ3a8bVNAsh+6GTv47py9bssnmmJ1j0QjM/bCKKM0HbVfO4Xik4q9Fj7sd80w+vYljIR5wkb6acDXyCmBulrZnX1X2HXfrPT9uC51gfAoVAqt0Ym+MNHDUrkg6nDWgP3o01a6bfYvtaJTTOljlbxkilYM4=
+  app: fathomless-reef-87064
+  on:
+    repo: matteprg/Blog-API-Capstone
