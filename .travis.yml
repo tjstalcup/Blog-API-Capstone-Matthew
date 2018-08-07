@@ -5,7 +5,7 @@ services:
 deploy:
   provider: heroku
   api_key:
-    secure: 14738f69-0a28-4275-a285-63e508c0258d=
+    secure: 14738f69-0a28-4275-a285-63e508c0258d
   app: fathomless-reef-87064
   on:
     repo: matteprg/Blog-API-Capstone
