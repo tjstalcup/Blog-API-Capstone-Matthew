@@ -5,9 +5,12 @@ var mongoose = require("mongoose"),
 
 
 //APP CONFIG
+mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost:27017/restful_blog_app", { useNewUrlParser: true })
 
 app.use(express.static('public'));
+app.use(express.json());
+app.use(morgan('common'));
 
 
 app.get("/", function (req, res) {
@@ -16,9 +19,41 @@ app.get("/", function (req, res) {
 
 //MAIN PAGE SHOWS MOST RECENT POSTS
 //INDEX ROUTE
-app.get("/blogs", function (req, res) {
-
+app.get("/posts", function (req, res) {
+    BlogPost
+        .find()
+        .then(posts => {
+            return {
+                id: post._id,
+                author: post.authorName,
+                content: post.content,
+                title: post.title
+            };
+        })
+        .catch(err => {
+            console.error(err);
+            RTCRtpSender.status(500).json({ error: 'something went wrong'});
+        });
 });
+
+//PAGE TO SHOW INDIVIDUAL POST WITH FULL TEXT
+app.get("/posts/:id", function (req, res) {
+    BlogPost
+        .findById(req.params.id)
+        .then(post => {
+            res.json({
+                id: post._id,
+                author: post.authorName,
+                content: post.content,
+                comments: post.comments
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'something went wrong'});
+        });
+});
+
 //HOME PAGE SHOWS USER POSTS 
 
 //LOGIN PAGE
@@ -26,7 +61,18 @@ app.get("/blogs", function (req, res) {
 //SIGN UP PAGE
 
 //NEW POST PAGE
-
+app.post("/posts", function (req, res) {
+    const requiredFields = ['title', 'content', 'author_id'];
+    requiredFields.forEach(field => {
+        if (!(field in req.body)) {
+            const message = `Missing \`${field}\` in request body`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    });
+    Author
+        .findById
+})
 //EDIT POST PAGE
 
 //COMMENTS PAGE
