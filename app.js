@@ -1,71 +1,96 @@
-var expressSanitizer = require("express-sanitizer"),
-    methodOverride = require("method-override"),
-    bodyParser = require("body-parser"),
-    mongoose = require("mongoose"),
-    express = require("express"),
-    morgan = require('morgan'),
-    app = express();
+var express = require("express"),
+    morgan = require("morgan"),
+    mongoose = require("mongoose");
 
-//APP CONFIG
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/restful_blog_app", {
-    useNewUrlParser: true
-});
-app.use(express.static("public"));
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(expressSanitizer());
+const { DATABASE_URL, PORT } = require('./config');
+const { Author, BlogPost } = require('./models/schemas');
+
+var app = express();
+mongoose.connect("mongodb://localhost:27017/restful_blog_app", { useNewUrlParser: true });
+
 app.use(morgan('common'));
 app.use(express.json());
 
-const {
-    DATABASE_URL,
-    PORT
-} = require("./config");
-const {
-    BlogPost
-} = require("./models");
-
-//SCHEMAS
-var commentSchema = mongoose.Schema({
-    text: String,
-    author: String
-});
-
-var blogSchema = new mongoose.Schema({
-    title: String,
-    image: String,
-    body: String,
-    author: String,
-    created: {
-        type: Date,
-        default: Date.now
-    },
-    comments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment"
-    }]
-})
-
-var Blog = mongoose.model("Blog", blogSchema);
-var Comment = mongoose.model("Comment", commentSchema);
-
-//ROUTES
-app.get('/posts', function (req, res) {
-    BlogPost
+app.get('/authors', function(req, res) {
+    Author
         .find()
-        .then(posts => {
-            res.json(posts.map(post => post.serialize()));
+        .then(authors => {
+            res.json(authors.map(author => {
+                return {
+                    id: author_id,
+                    name: `${author.firstName} ${author.lastName}`,
+                    userName: author.userName
+                };
+            }));
         })
         .catch(err => {
             console.error(err);
-            res.status(500).json({
-                error: 'something went wrong'
-            });
+            res.status(500).json({ error: 'something went wrong'});
         });
 });
 
-app.post("/posts", function (req, res) {
-    const requiredFields = ['title', 'body', 'image']
-})
+app.get("/post", function(req, res) {
+    BlogPost
+        .find()
+        .then(posts => {
+            res.json(posts.map(post => {
+                return {
+                    id: post._id,
+                    author: post.authorName,
+                    content: post.content,
+                    title: post.title
+                };
+            }));
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'something went wrong'});
+        });
+});
+
+app.get("/posts", function (req, res) {
+    BlogPost
+        
+});
+
+function runServer(databaseUrl, port = PORT) {
+    return new Promise((resolve, reject) => {
+      mongoose.connect(databaseUrl, err => {
+        if (err) {
+          return reject(err);
+        }
+        server = app.listen(port, () => {
+          console.log(`Your app is listening on port ${port}`);
+          resolve();
+        })
+          .on('error', err => {
+            mongoose.disconnect();
+            reject(err);
+          });
+      });
+    });
+  }
+  
+  // this function closes the server, and returns a promise. we'll
+  // use it in our integration tests later.
+  function closeServer() {
+    return mongoose.disconnect().then(() => {
+      return new Promise((resolve, reject) => {
+        console.log('Closing server');
+        server.close(err => {
+          if (err) {
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    });
+  }
+  
+  // if server.js is called directly (aka, with `node server.js`), this block
+  // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
+  if (require.main === module) {
+    runServer(DATABASE_URL).catch(err => console.error(err));
+  }
+  
+  module.exports = { runServer, app, closeServer };

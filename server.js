@@ -6,18 +6,18 @@ var mongoose = require("mongoose"),
 
 //APP CONFIG
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/restful_blog_app", { useNewUrlParser: true })
+mongoose.connect("mongodb://localhost:27017/restful_blog_app", { useNewUrlParser: true });
 
 app.use(express.static('public'));
 app.use(express.json());
 app.use(morgan('common'));
 
-
+//MAIN PAGE SHOWS MOST RECENT POSTS
 app.get("/", function (req, res) {
     res.send("Here I am");
-})
+});
 
-//MAIN PAGE SHOWS MOST RECENT POSTS
+
 //INDEX ROUTE
 app.get("/posts", function (req, res) {
     BlogPost
@@ -71,7 +71,8 @@ app.post("/posts", function (req, res) {
         }
     });
     Author
-        .findById
+        .findById(req.params.id)
+            .then()
 })
 //EDIT POST PAGE
 
