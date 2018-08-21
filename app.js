@@ -14,6 +14,7 @@ const {
     Author,
     BlogPost
 } = require('./models/schemas');
+const jsonParser = bodyParser.json();
 
 var app = express();
 mongoose.connect("mongodb://localhost:27017/blog-app", {
@@ -49,7 +50,7 @@ app.get('/authors', function (req, res) {
         });
 });
 
-app.post('/authors', cors(), function (req, res) {
+app.post('/authors', jsonParser, function (req, res) {
     const requiredFields = ['firstName', 'lastName', 'userName'];
     requiredFields.forEach(field => {
         if (!(field in req.body)) {
