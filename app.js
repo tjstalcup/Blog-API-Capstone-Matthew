@@ -1,6 +1,8 @@
 var express = require("express"),
     morgan = require("morgan"),
-    mongoose = require("mongoose");
+    mongoose = require("mongoose"),
+    cors = require("cors"),
+    bodyParser = require("body-parser");
 
 mongoose.Promise = global.Promise;
 
@@ -20,6 +22,8 @@ mongoose.connect("mongodb://localhost:27017/blog-app", {
 
 app.use(morgan('common'));
 app.use(express.json());
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.get('/', function (req, res) {
     res.redirect('/posts');
@@ -45,7 +49,7 @@ app.get('/authors', function (req, res) {
         });
 });
 
-app.post('/authors', function (req, res) {
+app.post('/authors', cors(), function (req, res) {
     const requiredFields = ['firstName', 'lastName', 'userName'];
     requiredFields.forEach(field => {
         if (!(field in req.body)) {
@@ -164,7 +168,7 @@ app.delete('/authors/:id', function (req, res) {
         });
 });
 
-app.get("/post", function (req, res) {
+app.get("/post", cors(), function (req, res) {
     BlogPost
         .find()
         .then(posts => {
