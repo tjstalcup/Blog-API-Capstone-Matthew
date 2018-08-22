@@ -1,12 +1,24 @@
 * {
   box-sizing: border-box;
 }
+
 a {
   color: black;
 }
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
+  background-image: url("../photos/1810144-2.png");
+  /* The image used */
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  /* Full height */
+  background-size: cover;
 }
 
 /* Add a black background color to the top navigation */
@@ -15,15 +27,20 @@ body {
   padding: 60px;
   text-align: center;
   background: url(../photos/2932191.png) no-repeat center top;
+  background-color: white;
   color: white;
 }
+
+/* #main-page {
+  
+} */
 
 /* Style the top navigation bar */
 
 .navbar {
   display: flex;
   background-color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 /* Style the navigation bar links */
@@ -49,8 +66,6 @@ body {
   flex-wrap: wrap;
 }
 
-
-
 /* .container {
   text-align: center;
   width: 100%;
@@ -68,7 +83,75 @@ body {
   background-color: rgb(218, 218, 218);
   width: 65%;
   padding: 20px;
+  padding-top: 20px;
   margin-bottom: 20px;
+}
+
+img {
+  max-width: 100%/* Set a small width */
+}
+
+.login-header {
+	border-bottom: 2px solid #000;
+    margin-top: 72px;
+    font-size: 36px;
+    width: 73%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 52px;
+    text-align: center;
+}
+.login-header legend {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+input[type="email"], input[type="password"] {
+	display: block;
+    width: 322px;
+    padding: 5px;
+    margin: 10px auto 20px auto;
+    font-size: 18px;
+    border: 2px solid #e6e6e6;
+    background-color: #f2f2f2;
+}
+label {
+	font-size: 18px;
+}
+.js-login-button, .js-signup-button {
+  width: 35%;
+  margin-top: 15px;
+    padding: 12px;
+    background-color: #0a0ef8bf;
+      transition: background-color 0.5s ease;
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    border-radius: 8px;
+    color: white;
+
+}
+.js-login-button:hover, .js-signup-button:hover {
+	cursor: pointer;
+	background-color: #8486f8bf;
+}
+
+#login {
+  margin: auto;
+  background-color: rgb(218, 218, 218);
+  width: 65%;
+  padding: 20px;
+  padding-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#signup {
+  margin: auto;
+  background-color: rgb(218, 218, 218);
+  width: 65%;
+  padding: 20px;
+  padding-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 @media screen and (max-width: 700px) {

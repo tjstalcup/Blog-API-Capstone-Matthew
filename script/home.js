@@ -13,8 +13,17 @@ function showBlogPosts() {
         for (let i = 0; i <= data.length; i++) {
             $.each(data[i], () => {
                 //console.log(data[i]);
-                let id = data[i].id;
-                $(`<div class="blogContainer"><div class="content"><h3><a href ="#" class="title">${data[i].title}</a></h3><p>${data[i].content}</p></div><div class="author"><p>${data[i].author}</p></div></div>`).appendTo(".blogPosts");
+                // let id = data[i].id;
+                //console.log("data[i].picture");
+                $(`<div class="blogContainer"><div class="content">
+                <img src="${data[i].picture}">
+                <h3><a href ="#" class="title">${data[i].title}</a></h3>
+                <p>${data[i].content}</p>
+                </div>
+                <div class="author">
+                <p>${data[i].author}</p>
+                </div>
+                </div>`).appendTo(".blogPosts");
             });
         }
     });
@@ -32,7 +41,7 @@ function handleTitleClick() {
 }
 
 function getPostById(id, callback) {
-    $.getJSON(`http://localhost:8080/posts/`, function (data) {
+    $.getJSON(`http://localhost:8080/posts/${id}`, function (data) {
         //console.log(data);
         for (let i = 0; i <= data.length; i++) {
             $.each(data[i], () => {
@@ -48,7 +57,7 @@ function getPostById(id, callback) {
 function renderLoginPage() {
     return `
             <section class="login-screen" aria-live="assertive">
-            <form role="form" class="login">
+            <form role="form" class="login" id="login">
                 <fieldset name="login-info">
                     <div class="login-header">
                         <legend align="center">Log In</legend>
@@ -83,7 +92,7 @@ function handleLoginButton() {
 function renderSignUp() {
     return `
             <section class="signup-page-screen" aria-live="assertive">
-            <form role="form" class="signup">
+            <form role="form" class="signup" id="signup">
                 <fieldset name="signup-info">
                     <div class="login-header">
                         <legend>Sign Up</legend>
@@ -136,7 +145,6 @@ function eventHandlers() {
     showBlogPosts();
     handleLoginButton();
     signUpButton();
-    homeButton();
     handleTitleClick();
 
 }

@@ -19,6 +19,7 @@ var blogPostSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Author"
     },
+    picture: String,
     comments: [commentSchema]
 });
 
@@ -42,6 +43,7 @@ blogPostSchema.methods.serialize = function() {
         author: this.authorName,
         content: this.content,
         title: this.title,
+        picture: this.picture,
         comments: this.comments
     };
 };
