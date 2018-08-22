@@ -8,16 +8,17 @@ function myFunction() {
 }
 
 function showBlogPosts() {
-    $.getJSON("http://localhost:8080/post", function (data) {
+    $.getJSON("http://localhost:8080/posts", function (data) {
         //console.log(data);
+        
         for (let i = 0; i <= data.length; i++) {
             //$.each(data[i], () => {
             //console.log(data[i]);
-            // let id = data[i].id;
+            // var id = data[i].id;
             //console.log("data[i].picture");
             $(`<div class="blogContainer"><div class="content">
                 <img src="${data[i].picture}">
-                <h3><a href ="#" class="title">${data[i].title}</a></h3>
+                <h3><a href ="#" data-entryid="${data[i].id}" class="entry-title">${data[i].title}</a></h3>
                 <p>${data[i].content}</p>
                 </div>
                 <div class="author">
@@ -25,33 +26,62 @@ function showBlogPosts() {
                 </div>
                 </div>`).appendTo(".blogPosts");
             //});
+            
+        }
+        
+    });
+}
+
+function renderSinglePost(response) {
+    return `
+    <div class="blogContainer"><div class="content">
+        <img src="${response.picture}">
+            <h3>
+                <a href ="#" data-entryid="${response.id}" class="entry-title">${response.title}</a>
+            </h3>
+        <p>${response.content}</p>
+    </div>
+    <div class="author">
+        <p>${response.author}</p>
+    </div>
+    `;
+}
+
+function displayIndividualPost(response) {
+    const singlePost = renderSinglePost(response);
+    $('.blogPosts').prop('hidden', true);
+    $('.new').html(singlePost);
+}
+
+function getIndividualPost(id, callback) {
+    console.log(id);
+
+    $.ajax({
+        type: "GET",
+        url: `http://localhost:8080/posts/${id}`,
+        dataType: "json",
+        contentType: "application/json",
+        success: function (response) {
+            displayIndividualPost(response);
         }
     });
 }
 
 
 function handleTitleClick() {
-    $('.blogPosts').on('click', '.title', function () {
+    $('.blogPosts').on('click', '.entry-title', function () {
         console.log('Title of Post clicked');
-        event.preventDefault();
-        $('.blogPosts').prop('hidden', true);
-        const id = $(this).data("")
-        getPostById(id);
+        const id = $(this).data("entryid");        
+        getIndividualPost(id, displayIndividualPost);
     });
 }
 
-function getPostById(id, callback) {
-    $.getJSON(`http://localhost:8080/posts/${id}`, function (data) {
-        //console.log(data);
-        for (let i = 0; i <= data.length; i++) {
-            $.each(data[i], () => {
-                //console.log(data[i]);
-                let id = data[i].id;
-                $(`<div class="blogContainer"><div class="content"><h3><a href ="#" class="title">${data[i].title}</a></h3><p>${data[i].content}</p></div><div class="author"><p>${data[i].author}</p></div></div>`).appendTo(".blogPosts");
-            });
-        }
-    });
-}
+// function getPostById(id, callback) {
+//     $.getJSON(`http://localhost:8080/posts/${id}`, function (data) {
+//         console.log(data);
+        
+//     });
+// }
 
 // //LOGIN PAGE
 // function renderLoginPage() {
@@ -149,8 +179,9 @@ function getPostById(id, callback) {
 
 //SHOW HOME PAGE
 function displayHomePage() {
-    $('.blogPosts').removeAttr('hidden');
     $('.new').prop('hidden', true);
+    $('.blogPosts').removeAttr('hidden');
+    
     showBlogPosts();
 }
 
@@ -167,7 +198,7 @@ function homeButton() {
 function renderNewPost() {
     return `
             <section class="new-post-form" aria-live="assertive">
-                <form action="/posts" method="POST" role="form" class="newPost" id="newPost">
+                <form role="form" class="newPost" id="newPost">
                     <div class="post-header">
                         <legend align="center">New Detail Complete!!!</legend>
                     </div>
@@ -179,6 +210,9 @@ function renderNewPost() {
                     </div>
                     <div class="form-group">
                         <textarea rows="4" cols="40" form="newPost" maxlength="2000" id="desc" name="content" placeholder="Content" required></textarea>
+                    </div>
+                    <div>
+                        <input class="form-control" id="username" type="text" name="username" placeholder="UserName" required>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="submit-btn">Submit</button>
@@ -196,13 +230,14 @@ function displayNewPostPage() {
 
 function handleNewPostBtn() {
     $('.newDetail').on('click', function(event) {
+        console.log('New Detail Clicked');
         event.preventDefault();
         displayNewPostPage();
     });
 }
 
 function postNewDetail() {
-    $('.new').on('submit', '.newPost', function (event) {
+    $('.newPost').on('submit', '.submit-btn', function (event) {
         event.preventDefault();
         const title = $('#title').val();
         const image = $('#image').val();
@@ -216,7 +251,7 @@ function postNewDetail() {
 
         $.ajax({
             type: "POST",
-            url: "/posts",
+            url: "../posts",
             data: JSON.stringify(newPostObject),
             dataType: "json",
             success: function () {
@@ -239,7 +274,6 @@ function submitPostButton() {
 function eventHandlers() {
     showBlogPosts();
     handleNewPostBtn();
-    signUpButton();
     handleTitleClick();
     homeButton();
 
