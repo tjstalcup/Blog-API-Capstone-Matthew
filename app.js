@@ -50,6 +50,20 @@ app.get('/authors', function (req, res) {
         });
 });
 
+// app.get('/authors/:id', function (req, res) {
+//     Author
+//         .findById(req.params.id)
+//         .then(post => {
+//             res.json(post.serialize());
+//         })
+//         .catch(err => {
+//             console.error(err);
+//             res.status(500).json({
+//                 error: 'something went horribly awry'
+//             });
+//         });
+// });
+
 app.post('/authors', jsonParser, function (req, res) {
     const requiredFields = ['firstName', 'lastName', 'userName'];
     requiredFields.forEach(field => {
@@ -174,12 +188,7 @@ app.get("/post", cors(), function (req, res) {
         .find()
         .then(posts => {
             res.json(posts.map(post => {
-                return {
-                    id: post._id,
-                    author: post.authorName,
-                    content: post.content,
-                    title: post.title
-                };
+                return post.serialize();
             }));
         })
         .catch(err => {
@@ -194,13 +203,7 @@ app.get("/posts/:id", function (req, res) {
     BlogPost
         .findById(req.params.id)
         .then(post => {
-            res.json({
-                id: post._id,
-                author: post.authorName,
-                content: post.content,
-                title: post.title,
-                comments: post.comments
-            });
+            res.json(post.serialize());
         })
         .catch(err => {
             console.error(err);
@@ -210,8 +213,8 @@ app.get("/posts/:id", function (req, res) {
         });
 });
 
-app.post('/posts/', function (req, res) {
-    const requiredFields = ['title', 'content', 'author_id'];
+app.post('/posts', function (req, res) {
+    const requiredFields = ['title', 'content','picture', 'author_id'];
     requiredFields.forEach(field => {
         if (!(field in req.body)) {
             const message = `Missing \`${field}\` in request body`;
