@@ -420,7 +420,7 @@ function displayNewPostPage() {
 }
 //handle new detail button clicked
 function handleNewPostBtn() {
-    $('.newDetail').on('click', function(event) {
+    $('.navbar').on('click', '.newDetail', function(event) {
         console.log('New Detail Clicked');
         event.preventDefault();
         displayNewPostPage();
@@ -459,6 +459,24 @@ function submitPostButton() {
         
     });
 }
+
+//LOGOUT
+function logOutButton() {
+    $('.area').on('click', '.logout', function(event) {
+        event.preventDefault();
+        console.log('Logged Out');
+        jwt = null;
+        sessionStorage.clear();
+        location.reload();
+    });
+}
+
+function homeButton() {
+    $(".home-").on("click", function() {
+          location.reload();
+    });
+}
+
 //EVENT HANDLERS
 function eventHandlers() {
     showBlogPosts();
@@ -471,4 +489,5 @@ function eventHandlers() {
     signUpSuccess();
     loginSuccess();
 }
+
 $(eventHandlers);
