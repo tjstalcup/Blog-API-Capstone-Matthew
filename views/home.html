@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -20,10 +21,13 @@
     </div>
     <div class="area">
         <div class="navbar" id="myTopnav">
-            <a href="#" class="home">Home</a>
+            <a href="#" class="home" id="active">Home</a>
             <a href="#" class="newDetail">Add New Detail</a>
             <a href="#" class="signup">Sign Up</a>
             <a href="#" class="logout">Logout</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                <i class="fa fa-bars"></i>
+              </a>
         </div>
 
         <main role="main" id="main-page">

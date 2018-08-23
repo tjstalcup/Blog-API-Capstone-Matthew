@@ -1,17 +1,24 @@
 function myFunction() {
     var x = document.getElementById("myTopnav");
-    if (x.className === "topnav") {
+    if (x.className === "navbar") {
         x.className += " responsive";
     } else {
-        x.className = "topnav";
+        x.className = "navbar";
     }
+}
+
+function handleHambugerClick() {
+    $('.fa fa-bars').on('click', function(event) {
+        event.preventDefault();
+        myFunction();
+    });
 }
 
 function showBlogPosts() {
     $.getJSON("http://localhost:8080/posts", function (data) {
         //console.log(data);
         
-        for (let i = 0; i <= data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
             //$.each(data[i], () => {
             //console.log(data[i]);
             // var id = data[i].id;
@@ -19,11 +26,6 @@ function showBlogPosts() {
             $(`<div class="blogContainer"><div class="content">
                 <img src="${data[i].picture}">
                 <h3><a href ="#" data-entryid="${data[i].id}" class="entry-title">${data[i].title}</a></h3>
-                <p>${data[i].content}</p>
-                </div>
-                <div class="author">
-                <p>${data[i].author}</p>
-                </div>
                 </div>`).appendTo(".blogPosts");
             //});
             
@@ -49,8 +51,9 @@ function renderSinglePost(response) {
 
 function displayIndividualPost(response) {
     const singlePost = renderSinglePost(response);
-    $('.blogPosts').prop('hidden', true);
+    $('.blogPosts').hide();
     $('.new').html(singlePost);
+    $('.new').show();
 }
 
 function getIndividualPost(id, callback) {
@@ -76,12 +79,6 @@ function handleTitleClick() {
     });
 }
 
-// function getPostById(id, callback) {
-//     $.getJSON(`http://localhost:8080/posts/${id}`, function (data) {
-//         console.log(data);
-        
-//     });
-// }
 
 // //LOGIN PAGE
 // function renderLoginPage() {
@@ -179,8 +176,8 @@ function handleTitleClick() {
 
 //SHOW HOME PAGE
 function displayHomePage() {
-    $('.new').prop('hidden', true);
-    $('.blogPosts').removeAttr('hidden');
+    $('.new').hide();
+    $('.blogPosts').show();
     
     showBlogPosts();
 }
@@ -197,34 +194,56 @@ function homeButton() {
 //NEW POST
 function renderNewPost() {
     return `
-            <section class="new-post-form" aria-live="assertive">
+            <div class="container">
                 <form role="form" class="newPost" id="newPost">
                     <div class="post-header">
-                        <legend align="center">New Detail Complete!!!</legend>
+                        <legend align="center">Add New Detail!!!</legend>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" id="title" type="text" name="title" placeholder="Title" required>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="title">Title</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="text" id="title" name="title" placeholder="Title" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" id="image" type="text" name="picture" placeholder="Image URL" required>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="image">Image URL</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="text" id="image" name="picture" placeholder="Image URL" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <textarea rows="4" cols="40" form="newPost" maxlength="2000" id="desc" name="content" placeholder="Content" required></textarea>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="desc">Content</label>
+                        </div>
+                        <div class="col-75">
+                            <textarea rows="4" cols="40" form="newPost" maxlength="2000" id="desc" name="content" placeholder="Write Something..." required></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <input class="form-control" id="username" type="text" name="username" placeholder="UserName" required>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="username">User Name</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="text" id="username" name="username" placeholder="UserName" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="submit-btn">Submit</button>
                     </div>
                 </form>
+            </div>
     `;
 }
 
 function displayNewPostPage() {
     const newPost = renderNewPost();
-    $('.blogPosts').prop('hidden', true);
+    $('.blogPosts').hide();
     $('.new').html(newPost);
+    $('.new').show();
     renderNewPost();
 }
 
@@ -276,7 +295,7 @@ function eventHandlers() {
     handleNewPostBtn();
     handleTitleClick();
     homeButton();
-
+    handleHambugerClick();
 }
 $(eventHandlers);
 
