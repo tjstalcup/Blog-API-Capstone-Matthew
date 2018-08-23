@@ -2,9 +2,13 @@ var express = require("express"),
     morgan = require("morgan"),
     mongoose = require("mongoose"),
     cors = require("cors"),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    passport = require("passport");
 
 //APP CONFIG
+const { router: entriesRouter } = require('./entries');
+const { router: usersRouter } = require('./users');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 mongoose.Promise = global.Promise;
 
 const {
@@ -15,6 +19,7 @@ const {
     Author,
     BlogPost
 } = require('./models/schemas');
+
 const jsonParser = bodyParser.json();
 
 var app = express();
@@ -27,15 +32,32 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+// CORS
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+    if (req.method === 'OPTIONS') {
+      return res.send(204);
+    }
+    next();
+  });
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
+app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
+app.use('/api/entries', entriesRouter);
 
 //RESTFUL ROUTES
 //INDEX ROUTE
 app.get('/', function (req, res) {
-    res.redirect('/posts');
+    res.redirect('/api/posts');
 });
 
 //BLOG POST ROUTES
-app.get("/posts", cors(), function (req, res) {
+app.get("/api/posts", cors(), function (req, res) {
     BlogPost
         .find()
         .then(posts => {
@@ -52,7 +74,7 @@ app.get("/posts", cors(), function (req, res) {
 });
 
 //SHOW ROUTE
-app.get("/posts/:id", cors(), function (req, res) {
+app.get("/api/posts/:id", cors(), function (req, res) {
     BlogPost
         .findById(req.params.id)
         .then(post => {
@@ -66,99 +88,7 @@ app.get("/posts/:id", cors(), function (req, res) {
         });
 });
 
-//NEW ROUTE
-app.post('/posts', function (req, res) {
-    const requiredFields = ['title', 'content','picture', 'userName'];
-    requiredFields.forEach(field => {
-        if (!(field in req.body)) {
-            const message = `Missing \`${field}\` in request body`;
-            console.error(message);
-            return res.status(400).send(message);
-        }
-    });
 
-    Author
-        .findById(req.body.userName)
-        .then(author => {
-            if (author) {
-                BlogPost
-                    .create({
-                        title: req.body.title,
-                        content: req.body.content,
-                        author: req.body.id
-                    })
-                    .then(blogPost => res.status(201).json({
-                        id: blogPost.id,
-                        author: `${author.firstName} ${author.lastName}`,
-                        content: blogPost.content,
-                        title: blogPost.title,
-                        comments: blogPost.comments
-                    }))
-                    .catch(err => {
-                        console.error(err);
-                        res.status(500).json({
-                            error: 'Something went wrong'
-                        });
-                    });
-            } else {
-                const message = `Author not found`;
-                console.error(message);
-                return res.status(400).send(message);
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            res.status(500).json({
-                error: 'something went horrible awry'
-            });
-        });
-});
-
-//EDIT ROUTE
-app.put('/posts/:id', function (req, res) {
-    if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-        res.status(400).json({
-            error: 'Request path id and request body id values must match'
-        });
-    }
-    const updated = {};
-    const updateableFields = ['title', 'content'];
-    updateableFields.forEach(field => {
-        if (field in req.body) {
-            updated[field] = req.body[field];
-        }
-    });
-    BlogPost
-        .findByIdAndUpdate(req.params.id, {
-            $set: updated
-        }, {
-            new: true
-        })
-        .then(updatedPost => res.status(200).json({
-            id: updatedPost.id,
-            title: updatedPost.title,
-            content: updatedPost.content
-        }))
-        .catch(err => res.status(500).json({
-            message: err
-        }));
-});
-
-//DELETE ROUTE
-app.delete('/posts/:id', function (req, res) {
-    BlogPost
-        .findByIdAndRemove(req.params.id)
-        .then(() => {
-            console.log(`Deleted blog post with id \`${req.params.id}\``);
-            res.status(204).end();
-        });
-});
-
-app.use('*', function (req, res) {
-    res.status(404).json({
-        message: 'Not Found'
-    });
-});
 
 //SERVER STUFF
 function runServer(databaseUrl, port = PORT) {

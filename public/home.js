@@ -1,3 +1,5 @@
+let jwt;
+
 //NAV BAR FUNCTION
 function myFunction() {
     var x = document.getElementById("myTopnav");
@@ -16,7 +18,7 @@ function handleHambugerClick() {
 }
 //SHOW HOME PAGE
 function showBlogPosts() {
-    $.getJSON("http://localhost:8080/posts", function (data) {      
+    $.getJSON("http://localhost:8080/api/posts", function (data) {      
         for (let i = 0; i < data.length; i++) {
             $(`<div class="blogContainer"><div class="content">
                 <img src="${data[i].picture}">
@@ -67,7 +69,7 @@ function getIndividualPost(id, callback) {
     console.log(id);
     $.ajax({
         type: "GET",
-        url: `http://localhost:8080/posts/${id}`,
+        url: `http://localhost:8080/api/posts/${id}`,
         dataType: "json",
         contentType: "application/json",
         success: function (response) {
@@ -88,9 +90,9 @@ function handleTitleClick() {
 //SIGN UP PAGE
 function renderSignUp() {
     return `
-    <div class="container">
+    <div class="container" id="signupCntnr">
     <form role="form" class="signUp" id="signUp">
-        <div class="login-header">
+        <div class="signUp-header">
             <legend align="center">Login</legend>
         </div>
         <div class="row">
@@ -134,7 +136,7 @@ function renderSignUp() {
             </div>
         </div>
         <div class="form-group">
-            <button type="submit" class="submit-btn">Submit</button>
+            <button type="submit" class="signUp-btn">Submit</button>
         </div>
     </form>
 </div>
@@ -153,12 +155,62 @@ function handleSignUpClick() {
     });
 }
 function signUpSuccess() {
-    
+    $('.area').on('submit', '.signUp', function(event) {
+		console.log('SignUp Success');
+		event.preventDefault();
+        //get values from sign up form
+        const firstName = $('#fName').val();
+        const lastName = $('#lName').val();
+		const username = $('#email').val();
+		const password = $('#password').val();
+		const confirmPassword = $('#password-confirm').val();
+
+		//validate user inputs
+		  // validate user inputs
+    if (username == '')
+        alert('Must input username');
+    else if (password == '')
+        alert('Must input password');
+    else if (confirmPassword == '')
+        alert('Must re-enter password');
+    else if (password != confirmPassword)
+        alert('Passwords do not match');
+        // if valid
+        else {
+        // create the payload object (what data we send to the api call)
+        const newUserObject = {
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            password: password
+        };
+        // make the api call using the payload above
+        $.ajax({
+        	type: 'POST',
+        	url: 'http://localhost:8080/api/users',
+        	dataType: 'json',
+        	data: JSON.stringify(newUserObject),
+        	contentType: 'application/json'
+        })
+        // if call is successful
+        .done(function() {
+        	alert('Account created! Please, log in!')
+        	displayLoginPage();
+        })
+        //if the call is failing
+        .fail(function(err) {
+        	console.error(err)
+        	alert(`Sign up error: ${err.responseJSON.message}`);
+        });
+    }
+		
+	});
 }
+
 //LOGIN PAGE
 function renderLoginPage() {
     return `
-    <div class="container">
+    <div class="container" id="login-cntnr">
     <form role="form" class="login" id="login">
         <div class="login-header">
             <legend align="center">Add New Detail!!!</legend>
@@ -180,8 +232,8 @@ function renderLoginPage() {
             </div>
         </div>
         <div class="form-group">
-            <button type="submit" class="submit-btn">Submit</button>
-            <p>Don't have an account? <a href="" class ="signup">Sign up</a></p>
+            <button type="submit" class="login-btn">Log In</button>
+                <p>Don't have an account? <a href="" class ="signup">Sign up</a></p>
         </div>
     </form>
 </div>
@@ -202,28 +254,72 @@ function handleLoginButton() {
         displayLoginPage();
     });
 }
-//authentication
 
+//authentication
+function loginSuccess() {
+    $('.area').on('submit', '.login', function(event) {
+        console.log('Login Success');
+        event.preventDefault();
+        //get inputs
+        const username = $('#email').val();
+        const password = $('#password').val();
+
+        //validate input
+        if (username == "") {
+            alert('Please input user name');
+        } else if (password == "") {
+            alert('Please input password');
+        }
+        //if input valid
+        else {
+            //data sent to api
+            const loginUser = {
+                username: username,
+                password: password
+            };
+            console.log(loginUser);
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/api/auth/login",
+                data: JSON.stringify(loginUser),
+                dataType: "json",
+                contentType: 'application/json'
+            })
+            //call successful
+            .done(function(data) {
+                jwt = data.authToken;
+                    sessionStorage.setItem('authToken', jwt);
+                    sessionStorage.setItem('username', loginUser.username);
+                    showDashboard();
+            })
+            //call failed
+            .fail(function(err) {
+                console.err(err);
+                alert('Login Failed. Try again or Sign Up.');
+            });
+        }
+    });
+}
 
 //USER HOME PAGE
 function renderUserHome(userEntries) {
     return `
     <div class="navbar" id="myTopnav">
-        <a href="#" class="home" id="active">Home</a>
-        <a href="#" class="dashboard">Dashboard</a>
-        <a href="#" class="newDetail">New Detail</a>
-        <a href="#" class="logout">Logout</a>
-        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-                <i class="fa fa-bars"></i>
-              </a>
+        <div class="user-nav">
+            <a href="#" class="home" id="active">Home</a>
+            <a href="#" class="dashboard">Dashboard</a>
+            <a href="#" class="newDetail">New Detail</a>
+            <a href="#" class="logout">Logout</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()"><i class="fa fa-bars"></i></a>
+        </div>
     </div>
 
     <main role="main" id="main-page">
         <div class="new">
             <section class="user-page" aria-live="assertive">
-                <div class="dashboard-header">
-                    <h2>My Detail Jobs</h2>
-                </div>
+            <div class="dashboard-header">
+                <legend align="center">My Detail Jobs</legend>
+            </div>
             <section class="user-detail-posts">
                 <div class="blogContainer">
                     <div class="content">
@@ -240,34 +336,32 @@ function renderUserHome(userEntries) {
     `;
 }
 
-// function displayDashboard(userEntries) {
-//     const userHome = renderUserHome(userEntries);
-//     $('#main-page').prop('hidden', true);
-//     $('.navbar').prop('hidden', true);
-//     $('.area').html(userHome);
-// }
+function displayDashboard(userEntries) {
+    const userHome = renderUserHome(userEntries);
+    $('#main-page').hide();
+    $('.navbar').hide();
+    $('.area').html(userHome);
+    $('.area').show();
+}
 
-// function showDashboard(user) {
-//     $.ajax({
-//         type: 'GET',
-//         url: `/authors/${user}`,
-//         dataType: 'json',
-//         contentType: 'application/json',
-//         headers: {
-//             Authorization: `Bearer ${jwt}`
-//         }
-//     })
-//     .done(function(result) {
-//         console.log(result);
-//         displayDashboard(result.entries)
-//     })
-//     .fail(function(err) {
-//         console.err(err);
-//     });
-// }
-
-
-
+function showDashboard(user) {
+    $.ajax({
+        type: 'GET',
+        url: `http://localhost:8080/api/entries`,
+        dataType: 'json',
+        contentType: 'application/json',
+        headers: {
+            Authorization: `Bearer ${jwt}`
+        }
+    })
+    .done(function(result) {
+        console.log(result);
+        displayDashboard(result.entries);
+    })
+    .fail(function(err) {
+        console.err(err);
+    });
+}
 
 //NEW POST
 function renderNewPost() {
@@ -374,5 +468,7 @@ function eventHandlers() {
     handleHambugerClick();
     handleLoginButton();
     handleSignUpClick();
+    signUpSuccess();
+    loginSuccess();
 }
 $(eventHandlers);

@@ -199,7 +199,7 @@ input[type=submit] {
 /* label {
 	font-size: 18px;
 } */
-.submit-btn {
+.submit-btn, .signUp-btn, .login-btn {
   width: 35%;
   margin-top: 15px;
     padding: 12px;
@@ -210,7 +210,7 @@ input[type=submit] {
     color: white;
 
 }
-.submit-btn:hover {
+.submit-btn:hover, .signUp-btn:hover, .login-btn:hover {
 	cursor: pointer;
 	background-color: #8486f8bf;
 }
