@@ -110,7 +110,7 @@ img {
 } */
 
 /* Style inputs, select elements and textareas */
-input[type=text], select, textarea{
+input[type=text], select, textarea, .login-form, .signUp-form{
   width: 100%;
   padding: 12px;
   border: 1px solid #ccc;
@@ -216,6 +216,26 @@ input[type=submit] {
 }
 
 #newPost {
+  margin: auto;
+  background-color: rgb(218, 218, 218);
+  width: 65%;
+  max-width: 550px;
+  padding: 20px;
+  padding-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+#login {
+  margin: auto;
+  background-color: rgb(218, 218, 218);
+  width: 65%;
+  max-width: 550px;
+  padding: 20px;
+  padding-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+#signUp {
   margin: auto;
   background-color: rgb(218, 218, 218);
   width: 65%;

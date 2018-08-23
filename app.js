@@ -29,12 +29,12 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 //RESTFUL ROUTES
+//INDEX ROUTE
 app.get('/', function (req, res) {
     res.redirect('/posts');
 });
 
 //BLOG POST ROUTES
-//INDEX ROUTE
 app.get("/posts", cors(), function (req, res) {
     BlogPost
         .find()
