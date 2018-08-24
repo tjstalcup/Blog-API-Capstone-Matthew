@@ -32,6 +32,8 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+// app.use(express.static('public'));
+// app.use(express.static('public'))
 // CORS
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -53,7 +55,8 @@ app.use('/api/entries', entriesRouter);
 //RESTFUL ROUTES
 //INDEX ROUTE
 app.get('/', function (req, res) {
-    res.redirect('/api/posts');
+    // res.redirect('/api/posts');
+    res.render('home.html');
 });
 
 //BLOG POST ROUTES
@@ -73,8 +76,9 @@ app.get("/api/posts", cors(), function (req, res) {
         });
 });
 
+const jwtAuth = passport.authenticate('jwt', {session: false});
 //SHOW ROUTE
-app.get("/api/posts/:id", cors(), function (req, res) {
+app.get("/api/posts/:id", jwtAuth, function (req, res) {
     BlogPost
         .findById(req.params.id)
         .then(post => {

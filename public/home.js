@@ -18,12 +18,13 @@ function handleHambugerClick() {
 }
 //SHOW HOME PAGE
 function showBlogPosts() {
-    $.getJSON("http://localhost:8080/api/posts", function (data) {      
+    // file://Users/tlkjlkj/Sites/lksjdflakjsdjf/home.html
+    $.getJSON("/api/posts", function (data) {
         for (let i = 0; i < data.length; i++) {
             $(`<div class="blogContainer"><div class="content">
                 <img src="${data[i].picture}">
                 <h3><a href ="#" data-entryid="${data[i].id}" class="entry-title">${data[i].title}</a></h3>
-                </div>`).appendTo(".blogPosts");            
+                </div>`).appendTo(".blogPosts");
         }
     });
 }
@@ -31,7 +32,7 @@ function showBlogPosts() {
 function displayHomePage() {
     $('.new').hide();
     $('.blogPosts').show();
-    
+
     showBlogPosts();
 }
 
@@ -69,9 +70,12 @@ function getIndividualPost(id, callback) {
     console.log(id);
     $.ajax({
         type: "GET",
-        url: `http://localhost:8080/api/posts/${id}`,
+        url: `/api/posts/${id}`,
         dataType: "json",
         contentType: "application/json",
+        beforeSend: function(xhr){
+          xhr.setRequestHeader("Authorization","Bearer "+sessionStorage.getItem('authToken'));
+        },
         success: function (response) {
             displayIndividualPost(response);
         }
@@ -82,7 +86,7 @@ function getIndividualPost(id, callback) {
 function handleTitleClick() {
     $('.blogPosts').on('click', '.entry-title', function () {
         console.log('Title of Post clicked');
-        const id = $(this).data("entryid");        
+        const id = $(this).data("entryid");
         getIndividualPost(id, displayIndividualPost);
     });
 }
@@ -187,7 +191,7 @@ function signUpSuccess() {
         // make the api call using the payload above
         $.ajax({
         	type: 'POST',
-        	url: 'http://localhost:8080/api/users',
+        	url: '/api/users',
         	dataType: 'json',
         	data: JSON.stringify(newUserObject),
         	contentType: 'application/json'
@@ -203,7 +207,7 @@ function signUpSuccess() {
         	alert(`Sign up error: ${err.responseJSON.message}`);
         });
     }
-		
+
 	});
 }
 
@@ -280,7 +284,7 @@ function loginSuccess() {
             console.log(loginUser);
             $.ajax({
                 type: "POST",
-                url: "http://localhost:8080/api/auth/login",
+                url: "/api/auth/login",
                 data: JSON.stringify(loginUser),
                 dataType: "json",
                 contentType: 'application/json'
@@ -456,7 +460,7 @@ function submitPostButton() {
     $('.submit-btn').on('click', function (event) {
         console.log('Sign Up Clicked');
         event.preventDefault();
-        
+
     });
 }
 

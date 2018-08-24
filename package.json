@@ -2,7 +2,7 @@
   "name": "blog-api-capstone",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "mocha --exit"
   },
